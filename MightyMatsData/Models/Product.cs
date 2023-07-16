@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace MightyMats.Models;
+namespace MightyMatsData.Models;
 
 public class Product
 {

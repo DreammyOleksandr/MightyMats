@@ -12,12 +12,26 @@
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
+      <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.8" />
       <PackageReference Include="Npgsql" Version="7.0.4" />
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.4" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\MightyMatsData\MightyMatsData.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Views\Home\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Home\Privacy.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Customer\Views\Shared\Error.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Customer\Views\Shared\_Layout.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Customer\Views\Shared\_ValidationScriptsPartial.cshtml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="Areas\Customer\Views\Home\Index.cshtml" />
+      <AdditionalFiles Include="Areas\Customer\Views\Home\Privacy.cshtml" />
     </ItemGroup>
 
 </Project>

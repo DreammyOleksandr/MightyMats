@@ -1,4 +1,4 @@
-namespace MightyMats.Models;
+namespace MightyMatsData.Models;
 
 public class ErrorViewModel
 {

@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using MightyMats.Models;
+using MightyMatsData.Models;
 
 namespace MightyMats.Controllers;
 

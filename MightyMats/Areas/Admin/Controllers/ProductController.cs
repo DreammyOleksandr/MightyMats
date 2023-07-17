@@ -62,4 +62,19 @@ public class ProductController : Controller
 
         return View();
     }
+
+    public async Task<IActionResult> Delete(int? id)
+    {
+        Product? product = await _unitOfWork._productRepository.Get(_ => _.Id == id);
+
+        if (product == null || product.Id == null || product.Id == 0)
+            return NotFound();
+
+        if (ModelState.IsValid)
+        {
+            _unitOfWork._productRepository.Remove(product);
+            await _unitOfWork._productRepository.Save();
+        }
+        return RedirectToAction(nameof(Index));
+    }
 }

@@ -27,7 +27,7 @@ public class Repository<T> : IRepository<T> where T : class
 
     public async Task<T> Get(Expression<Func<T, bool>> filter)
     {
-        IQueryable<T> query = _dbSet;
+        IQueryable<T> query = _dbSet.Where(filter);
         return await query.FirstOrDefaultAsync();
     }
 

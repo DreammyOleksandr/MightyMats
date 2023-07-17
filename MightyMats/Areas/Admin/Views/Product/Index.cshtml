@@ -14,23 +14,25 @@
             </div>
             <div class="col-6 text-end">
                 <a asp-controller="Product" asp-action="Create" class="btn btn-primary">
-                    <i class="bi bi-plus-circle"></i> Create New Product
+                    <i class="bi bi-plus-circle"></i> Create
                 </a>
             </div>
         </div>
         <table class="table table-bordered table-striped">
             <thead>
             <tr>
-                <th>
+                <th class="w-25">
                     Title
                 </th>
-                <th>
+                <th class="w-25">
                     Price
                 </th>
-                <th>
+                <th class="w-25">
                     Details
                 </th>
-                <th></th>
+                <th class="w-25">
+                    Actions
+                </th>
             </tr>
             </thead>
             <tbody>
@@ -45,11 +47,11 @@
                         @product.Details
                     </td>
                     <td>
-                        <div class="w-75 btn-group" role="group">
-                            <a asp-controller="Product" asp-action="Edit" asp-route-id="@product.Id" class="btn btn-primary mx-2">
+                        <div class="w-100 btn-group" role="group">
+                            <a asp-controller="Product" asp-action="Edit" asp-route-id="@product.Id" class="w-50 btn btn-primary mx-2">
                                 <i class="bi bi-pencil-square"></i> Edit
                             </a>
-                        <a asp-controller="Product" asp-action="Delete" asp-route-id="@product.Id" class="btn btn-danger mx-2">
+                        <a asp-controller="Product" asp-action="Delete" asp-route-id="@product.Id" class="w-50 btn btn-danger mx-2">
                             <i class="bi bi-trash-fill"></i> Delete
                         </a>
                         </div>

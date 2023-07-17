@@ -4,7 +4,7 @@
     <div class="card-header bg-secondary bg-gradient ml-0 py-3">
         <div class="row">
             <div class="col-12 text-center">
-                <h2 class="text-white py-2">Products List</h2>
+                <h2 class="text-dark py-2">Products List</h2>
             </div>
         </div>
     </div>
@@ -48,11 +48,11 @@
                     </td>
                     <td>
                         <div class="w-100 btn-group" role="group">
-                            <a asp-controller="Product" asp-action="Edit" asp-route-id="@product.Id" class="w-50 btn btn-primary mx-2">
-                                <i class="bi bi-pencil-square"></i> Edit
+                            <a asp-controller="Product" asp-action="Edit" asp-route-id="@product.Id" class="btn btn-primary mx-2">
+                                <i class="bi bi-pencil-square"></i>
                             </a>
-                        <a asp-controller="Product" asp-action="Delete" asp-route-id="@product.Id" class="w-50 btn btn-danger mx-2">
-                            <i class="bi bi-trash-fill"></i> Delete
+                        <a asp-controller="Product" asp-action="Delete" asp-route-id="@product.Id" class="btn btn-danger mx-2">
+                            <i class="bi bi-trash-fill"></i>
                         </a>
                         </div>
                     </td>

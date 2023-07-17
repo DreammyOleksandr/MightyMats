@@ -7,18 +7,18 @@ namespace MightyMatsData.Repository;
 public class Repository<T> : IRepository<T> where T : class
 {
     private readonly ApplicationDbContext _db;
-    internal DbSet<T> dbSet;
+    private DbSet<T> _dbSet;
 
     public Repository(ApplicationDbContext db)
     {
         _db = db;
-        dbSet = _db.Set<T>();
+        _dbSet = _db.Set<T>();
     }
 
-    public async Task<List<T>> GetAll(Expression<Func<T, bool>>? filter)
+    public async Task<IEnumerable<T>> GetAll(Expression<Func<T, bool>>? filter = null)
     {
-        IQueryable<T> query = dbSet;
-        
+        IQueryable<T> query = _dbSet;
+
         if (filter != null)
             query = query.Where(filter);
 
@@ -27,30 +27,30 @@ public class Repository<T> : IRepository<T> where T : class
 
     public async Task<T> Get(Expression<Func<T, bool>> filter)
     {
-        IQueryable<T> query = dbSet;
+        IQueryable<T> query = _dbSet;
         return await query.FirstOrDefaultAsync();
     }
 
     public async Task Add(T entity)
     {
-        await dbSet.AddAsync(entity);
+        await _dbSet.AddAsync(entity);
     }
 
     public void Update(T entity)
     {
-        dbSet.Update(entity);
+        _dbSet.Update(entity);
     }
 
     public void Remove(T entity)
     {
-         dbSet.Remove(entity);
+        _dbSet.Remove(entity);
     }
 
     public void RemoveRange(IEnumerable<T> entities)
     {
-        dbSet.RemoveRange(entities);
+        _dbSet.RemoveRange(entities);
     }
-    
+
     public async Task Save()
     {
         await _db.SaveChangesAsync();

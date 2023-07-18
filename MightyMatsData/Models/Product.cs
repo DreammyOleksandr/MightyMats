@@ -17,5 +17,9 @@ public class Product
     [MaxLength(399, ErrorMessage = "Details field must contain less than 400 symbols")]
     public string? Details { get; set; }
     
+    [Required] public int Length { get; set; }
+    [Required] public int Width { get; set; }
+    [Required] public int Height { get; set; }
+    
     [ValidateNever] public string? Image { get; set; }
 }

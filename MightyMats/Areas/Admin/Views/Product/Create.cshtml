@@ -32,6 +32,23 @@
                     <label asp-for="Details" class="ms-2"></label>
                     <span asp-validation-for="Details" class="text-danger"></span>
                 </div>
+                <table class="table table-bordered table-striped">
+                    <div class="form-floating py-2 col-12">
+                        <input asp-for="Length" class="w-25 form-control border-0 shadow">
+                        <label asp-for="Length" class="ms-2"></label>
+                        <span asp-validation-for="Length" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating py-2 col-12">
+                        <input asp-for="Width" class="w-25 form-control border-0 shadow">
+                        <label asp-for="Width" class="ms-2"></label>
+                        <span asp-validation-for="Width" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating py-2 col-12">
+                        <input asp-for="Height" value="4" class="w-25 form-control border-0 shadow">
+                        <label asp-for="Height" class="ms-2"></label>
+                        <span asp-validation-for="Height" class="text-danger"></span>
+                    </div>
+                </table>
                 <div class="form-floating py-2 col-12">
                     <input type="file" name="file" class="form-control border-0 shadow">
                     <label asp-for="Image" class="ms-2"></label>

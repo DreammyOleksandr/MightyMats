@@ -11,7 +11,7 @@
 </head>
 <body>
 <header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dar border-bottom box-shadow mb-3">
+    <nav class="navbar bg-light navbar-expand-sm navbar-toggleable-sm navbar-dar border-bottom box-shadow mb-5 fixed-top">
         <div class="container-fluid">
             <a class="navbar-brand" asp-area="Customer" asp-controller="Home" asp-action="Index">MightyMats</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -34,8 +34,9 @@
         </div>
     </nav>
 </header>
+<div style="height: 31.4px"></div>
 <div class="container">
-    <main role="main" class="pb-3">
+    <main role="main" class="pb-3 mt-5">
         @RenderBody()
     </main>
 </div>

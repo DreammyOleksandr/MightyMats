@@ -1,0 +1,38 @@
+@model Product
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+<div class="container">
+    <div class="card shadow rounded-4">
+        <div class="card-body">
+            <h3 class="card-title text-dark">@Model.Title</h3>
+            <div class="row">
+                <div class="col-lg-5 col-md-5 col-sm-6">
+                    <div class="white-box text-center">
+                        <img src="@Model.Image" class="card-img-bottom rounded-4 ">
+                    </div>
+                </div>
+                <div class="col-lg-7 col-md-7 col-sm-6">
+                    <h4 class="box-title text-dark">Product description</h4>
+                    <p>@Model.Description</p>
+                    <h2 class="mt-4 text-dark mx-2">
+                        @Model.Price.ToString("c")
+                    </h2>
+                    <div class="row pt-2 mt-3">
+                        <div class="col-6 w-50">
+                            <button class="btn btn-outline-info btn-rounded mr-1 form-control" data-toggle="tooltip" title="" data-original-title="Add to cart">
+                                <i class="fa fa-shopping-cart"></i> Add to Cart
+                            </button>
+                        </div>
+                        <div class="col-6 w-50">
+                            <a asp-area="Customer" asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary form-control">
+                                <i class="bi bi-arrow-left"></i> Back to list
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <h2 class="mt-4">Details:</h2>
+                <p class="mt-2">@Model.Details</p>
+            </div>
+        </div>
+    </div>
+</div>

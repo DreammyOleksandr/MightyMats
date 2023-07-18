@@ -33,4 +33,10 @@ public class HomeController : Controller
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
+
+    public IActionResult Details(int? id)
+    {
+        Product product = _unitOfWork._productRepository.Get(_ => _.Id == id).Result;
+        return product == null || product.Id == 0 || id == 0 ? NotFound() : View(product);
+    }
 }

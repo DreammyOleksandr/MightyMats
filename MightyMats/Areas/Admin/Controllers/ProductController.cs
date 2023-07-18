@@ -43,7 +43,7 @@ public class ProductController : Controller
 
             using (var fileStream = new FileStream(Path.Combine(productsPath, fileName), FileMode.Create))
             {
-                 file.CopyTo(fileStream);
+                file.CopyTo(fileStream);
             }
 
             product.Image = @"/images/products/" + fileName;
@@ -71,10 +71,11 @@ public class ProductController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Edit(Product? product, IFormFile file)
+    public async Task<IActionResult> Edit(int? id, IFormFile file)
     {
-        string webRootPath = _hostEnvironment.WebRootPath;
+        Product? product = _unitOfWork._productRepository.Get(_ => _.Id == id).Result;
 
+        string webRootPath = _hostEnvironment.WebRootPath;
         if (ModelState.IsValid)
         {
             if (file != null)
@@ -99,24 +100,35 @@ public class ProductController : Controller
 
                 product.Image = @"/images/products/" + fileName;
             }
-            
+
             _unitOfWork._productRepository.Update(product);
             await _unitOfWork._productRepository.Save();
 
             _toastNotification.AddInfoToastMessage("Successful update");
-
             return RedirectToAction(nameof(Index));
         }
+
 
         return NotFound();
     }
 
     public async Task<IActionResult> Delete(int? id)
     {
+        string webRootPath = _hostEnvironment.WebRootPath;
         Product? product = await _unitOfWork._productRepository.Get(_ => _.Id == id);
 
         if (product == null || product.Id == null || product.Id == 0)
             return NotFound();
+
+        if (!string.IsNullOrEmpty(product.Image))
+        {
+            string oldImagePath = $"{webRootPath}{product.Image.TrimStart('\\')}";
+
+            if (System.IO.File.Exists(oldImagePath))
+            {
+                System.IO.File.Delete(oldImagePath);
+            }
+        }
 
         if (ModelState.IsValid)
         {

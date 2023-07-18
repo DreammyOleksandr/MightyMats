@@ -5,25 +5,32 @@
 namespace MightyMatsData.Migrations
 {
     /// <inheritdoc />
-    public partial class AddingImagesRowToProduct : Migration
+    public partial class UnrequiringImage : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
+            migrationBuilder.AlterColumn<string>(
                 name: "Image",
                 table: "Products",
                 type: "text",
                 nullable: true,
-                defaultValue: "");
+                oldClrType: typeof(string),
+                oldType: "text");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
+            migrationBuilder.AlterColumn<string>(
                 name: "Image",
-                table: "Products");
+                table: "Products",
+                type: "text",
+                nullable: false,
+                defaultValue: "",
+                oldClrType: typeof(string),
+                oldType: "text",
+                oldNullable: true);
         }
     }
 }

@@ -1,9 +1,5 @@
 ﻿@model IEnumerable<Product>
 
-@{
-    ViewData["Title"] = "Home Page";
-}
-
 <div class="text-center">
     <h1 class="display-4">Welcome to MightyMats! (MM)</h1>
 </div>
@@ -14,8 +10,12 @@
     <div class="card mb-3 shadow rounded-4">
         <img src="@product.Image" class="card-img-top rounded-top-4" alt="Ooops... Something went wrong :(">
         <div class="card-body ">
-            <h5 class="card-title text-dark">@product.Title</h5>
-            <p class="card-text">@product.Description</p>
+            <div class="row pt-2 mt-3">
+                <h3 class="card-title text-dark col-8">@product.Title</h3>
+                <h4 class="text-center text-dark col-4 text-end">@product.Price.ToString("C")</h4>
+            </div>
+            <p class="card-text mt-1">@product.Description</p>
+
             <div class="row pt-2 mt-3">
                 <div class="col-6 col-md-3">
                     <a asp-controller="Product" asp-action="Index" class="btn btn-outline-info form-control shadow">Add to cart</a>

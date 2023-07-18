@@ -71,13 +71,35 @@ public class ProductController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Edit(Product? product)
+    public async Task<IActionResult> Edit(Product? product, IFormFile file)
     {
-        if (product == null || product.Id == null || product.Id == 0)
-            return NotFound();
+        string webRootPath = _hostEnvironment.WebRootPath;
 
         if (ModelState.IsValid)
         {
+            if (file != null)
+            {
+                string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                string productsPath = Path.Combine(webRootPath, @"images/products");
+
+                if (!string.IsNullOrEmpty(product.Image))
+                {
+                    string oldImagePath = $"{webRootPath}{product.Image.TrimStart('\\')}";
+
+                    if (System.IO.File.Exists(oldImagePath))
+                    {
+                        System.IO.File.Delete(oldImagePath);
+                    }
+                }
+
+                using (var fileStream = new FileStream(Path.Combine(productsPath, fileName), FileMode.Create))
+                {
+                    file.CopyTo(fileStream);
+                }
+
+                product.Image = @"/images/products/" + fileName;
+            }
+            
             _unitOfWork._productRepository.Update(product);
             await _unitOfWork._productRepository.Save();
 
@@ -86,7 +108,7 @@ public class ProductController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        return View();
+        return NotFound();
     }
 
     public async Task<IActionResult> Delete(int? id)

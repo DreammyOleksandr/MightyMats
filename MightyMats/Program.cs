@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using MightyMatsData;
 using MightyMatsData.UnitOfWork;
 using NToastNotify;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,9 @@ builder.Services.AddRazorPages().AddNToastNotifyNoty(new NotyOptions
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(
     builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddRazorPages();
+
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -32,6 +36,8 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.UseNToastNotify();
+
+app.MapRazorPages();
 
 app.MapControllerRoute(
     name: "default",

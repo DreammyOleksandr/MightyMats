@@ -21,7 +21,7 @@
                     <a asp-controller="Product" asp-action="Index" class="btn btn-outline-info form-control shadow">Add to cart</a>
                 </div>
                 <div class="col-6 col-md-3">
-                    <button type="submit" class="btn btn-outline-light form-control shadow">Details</button>
+                    <a asp-route-id="@product.Id" asp-area="Customer" asp-controller="Home" asp-action="Details" class="btn btn-outline-light form-control shadow">Details</a>
                 </div>
             </div>
         </div>

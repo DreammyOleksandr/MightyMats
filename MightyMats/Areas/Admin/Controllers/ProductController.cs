@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MightyMatsData.Models;
 using MightyMatsData.UnitOfWork;
+using NToastNotify;
 
 namespace MightyMats.Controllers;
 
@@ -8,10 +9,12 @@ namespace MightyMats.Controllers;
 public class ProductController : Controller
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IToastNotification _toastNotification;
 
-    public ProductController(IUnitOfWork unitOfWork)
+    public ProductController(IUnitOfWork unitOfWork, IToastNotification toastNotification)
     {
         _unitOfWork = unitOfWork;
+        _toastNotification = toastNotification;
     }
 
 
@@ -34,6 +37,7 @@ public class ProductController : Controller
             _unitOfWork._productRepository.Add(product);
             await _unitOfWork._productRepository.Save();
 
+            _toastNotification.AddSuccessToastMessage("Successful creation");
             return RedirectToAction(nameof(Index));
         }
 
@@ -57,6 +61,8 @@ public class ProductController : Controller
             _unitOfWork._productRepository.Update(product);
             await _unitOfWork._productRepository.Save();
 
+            _toastNotification.AddInfoToastMessage("Successful update");
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -74,7 +80,10 @@ public class ProductController : Controller
         {
             _unitOfWork._productRepository.Remove(product);
             await _unitOfWork._productRepository.Save();
+            
+            _toastNotification.AddWarningToastMessage($"Product {product.Title} has been deleted");
         }
+
         return RedirectToAction(nameof(Index));
     }
 }

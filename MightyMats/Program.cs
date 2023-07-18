@@ -1,9 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using MightyMatsData;
 using MightyMatsData.UnitOfWork;
+using NToastNotify;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddRazorPages().AddNToastNotifyNoty(new NotyOptions
+{
+    ProgressBar = true,
+    Timeout = 5000
+});
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(
     builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -24,6 +30,8 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.UseNToastNotify();
 
 app.MapControllerRoute(
     name: "default",

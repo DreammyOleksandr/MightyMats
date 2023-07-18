@@ -24,7 +24,7 @@
                         <a class="nav-link text-dark" asp-area="Customer" asp-controller="Home" asp-action="Privacy">Privacy</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a  class="text-dark nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Contents</a>
+                        <a class="text-dark nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Contents</a>
                         <div class="dropdown-menu">
                             <a class="dropdown-item" asp-area="Admin" asp-controller="Product" asp-action="Index">Products</a>
                         </div>
@@ -49,5 +49,6 @@
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>
 @await RenderSectionAsync("Scripts", required: false)
+@await Component.InvokeAsync("NToastNotify")
 </body>
 </html>

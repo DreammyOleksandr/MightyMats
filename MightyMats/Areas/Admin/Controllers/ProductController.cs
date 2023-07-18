@@ -71,9 +71,8 @@ public class ProductController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Edit(int? id, IFormFile file)
+    public async Task<IActionResult> Edit(Product product, IFormFile? file)
     {
-        Product? product = _unitOfWork._productRepository.Get(_ => _.Id == id).Result;
 
         string webRootPath = _hostEnvironment.WebRootPath;
         if (ModelState.IsValid)
@@ -107,8 +106,7 @@ public class ProductController : Controller
             _toastNotification.AddInfoToastMessage("Successful update");
             return RedirectToAction(nameof(Index));
         }
-
-
+        
         return NotFound();
     }
 

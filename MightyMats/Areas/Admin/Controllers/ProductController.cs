@@ -10,11 +10,14 @@ public class ProductController : Controller
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IToastNotification _toastNotification;
+    private readonly IWebHostEnvironment _hostEnvironment;
 
-    public ProductController(IUnitOfWork unitOfWork, IToastNotification toastNotification)
+    public ProductController(IUnitOfWork unitOfWork, IToastNotification toastNotification,
+        IWebHostEnvironment hostEnvironment)
     {
         _unitOfWork = unitOfWork;
         _toastNotification = toastNotification;
+        _hostEnvironment = hostEnvironment;
     }
 
 
@@ -30,19 +33,36 @@ public class ProductController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(Product product)
+    public async Task<IActionResult> Create(Product product, IFormFile? file)
     {
+        string webRootPath = _hostEnvironment.WebRootPath;
+        if (file != null)
+        {
+            string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+            string productsPath = Path.Combine(webRootPath, @"images/products");
+
+            using (var fileStream = new FileStream(Path.Combine(productsPath, fileName), FileMode.Create))
+            {
+                 file.CopyTo(fileStream);
+            }
+
+            product.Image = @"/images/products/" + fileName;
+        }
+
         if (ModelState.IsValid)
         {
-            _unitOfWork._productRepository.Add(product);
+            await _unitOfWork._productRepository.Add(product);
             await _unitOfWork._productRepository.Save();
 
             _toastNotification.AddSuccessToastMessage("Successful creation");
             return RedirectToAction(nameof(Index));
         }
-
-        return View();
+        else
+        {
+            return View(product);
+        }
     }
+
 
     public async Task<IActionResult> Edit(int? id)
     {
@@ -80,7 +100,7 @@ public class ProductController : Controller
         {
             _unitOfWork._productRepository.Remove(product);
             await _unitOfWork._productRepository.Save();
-            
+
             _toastNotification.AddWarningToastMessage($"Product {product.Title} has been deleted");
         }
 

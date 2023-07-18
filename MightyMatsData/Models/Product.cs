@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace MightyMatsData.Models;
 
@@ -16,5 +17,5 @@ public class Product
     [MaxLength(399, ErrorMessage = "Details field must contain less than 400 symbols")]
     public string? Details { get; set; }
     
-    [Required] public string Image { get; set; }
+    [Required, ValidateNever] public string Image { get; set; }
 }

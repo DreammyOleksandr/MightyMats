@@ -15,12 +15,21 @@ public class Repository<T> : IRepository<T> where T : class
         _dbSet = _db.Set<T>();
     }
 
-    public async Task<IEnumerable<T>> GetAll(Expression<Func<T, bool>>? filter = null)
+    public async Task<IEnumerable<T>> GetAll(Expression<Func<T, bool>>? filter = null, string? includeProps = null)
     {
         IQueryable<T> query = _dbSet;
 
         if (filter != null)
             query = query.Where(filter);
+
+        if (!string.IsNullOrEmpty(includeProps))
+        {
+            foreach (var includeProp in includeProps.Split(new char[] { ',' },
+                         StringSplitOptions.RemoveEmptyEntries))
+            {
+                query = query.Include(includeProp);
+            }
+        }
 
         return await query.ToListAsync();
     }

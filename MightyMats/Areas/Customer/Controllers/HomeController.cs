@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MightyMatsData.Models;
 using MightyMatsData.UnitOfWork;
@@ -36,7 +38,20 @@ public class HomeController : Controller
 
     public IActionResult Details(int? id)
     {
-        Product product = _unitOfWork._productRepository.Get(_ => _.Id == id).Result;
-        return product == null || product.Id == 0 || id == 0 ? NotFound() : View(product);
+        ShoppingCartItem cart = new()
+        {
+            Product = _unitOfWork._productRepository.Get(_ => _.Id == id).Result,
+        };
+        return cart.Product.Id == 0 || id == 0 ? NotFound() : View(cart);
+    }
+
+    [HttpPost]
+    [Authorize]
+    public IActionResult Details(ShoppingCartItem shoppingCartItem)
+    {
+        var claimsIdentity = (ClaimsIdentity)User.Identity;
+        var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+        return RedirectToAction(nameof(Index));
     }
 }

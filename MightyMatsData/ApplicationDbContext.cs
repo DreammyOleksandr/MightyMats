@@ -18,4 +18,6 @@ public class ApplicationDbContext : IdentityDbContext
 
     public DbSet<Product> Products { get; set; }
     public DbSet<ShoppingCartItem> ShoppingCartItems { get; set; }
+    public DbSet<OrderHeader> OrderHeaders { get; set; }
+    public DbSet<OrderDetail> OrderDetails { get; set; }
 }

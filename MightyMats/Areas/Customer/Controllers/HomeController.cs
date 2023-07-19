@@ -21,7 +21,7 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Index()
     {
-        IEnumerable<Product> products = await _unitOfWork._productRepository.GetAll(null);
+        IEnumerable<Product> products = await _unitOfWork._productRepository.GetAll();
         return View(products);
     }
 

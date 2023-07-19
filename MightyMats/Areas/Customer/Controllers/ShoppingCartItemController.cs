@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MightyMatsData.Models;
 using MightyMatsData.Models.ViewModels;
 using MightyMatsData.UnitOfWork;
 
@@ -28,6 +29,17 @@ public class ShoppingCartItemController : Controller
             ShoppingCartItems = await _unitOfWork._shoppingCartItemRepository.GetAll(_ => _.UserId == userId, includeProps:"Product"),
         };
 
+        foreach (var item in ShoppingCartVm.ShoppingCartItems)
+        {
+            item.Price = GetOrderTotal(item);
+            ShoppingCartVm.OrderTotal += (double)(item.Price * item.Count);
+        }
+        
         return View(ShoppingCartVm);
+    }
+
+    private decimal GetOrderTotal(ShoppingCartItem shoppingCartItem)
+    {
+        return shoppingCartItem.Product.Price;
     }
 }

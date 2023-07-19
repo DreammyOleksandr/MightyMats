@@ -39,6 +39,11 @@ public class ShoppingCartItemController : Controller
         return View(ShoppingCartVm);
     }
 
+    public IActionResult Summary()
+    {
+        return View();
+    }
+
     private decimal GetOrderTotal(ShoppingCartItem shoppingCartItem)
     {
         return shoppingCartItem.Product.Price;

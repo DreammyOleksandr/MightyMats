@@ -4,7 +4,7 @@ namespace MightyMatsData.Repository.IRepository;
 
 public interface IRepository<T> where T : class
 {
-    Task<IEnumerable<T>> GetAll(Expression<Func<T, bool>>? filter);
+    Task<IEnumerable<T>> GetAll(Expression<Func<T, bool>> filter = null, string? includeProps = null);
     Task<T> Get(Expression<Func<T, bool>> filter);
     Task Add(T entity);
     void Update(T entity);

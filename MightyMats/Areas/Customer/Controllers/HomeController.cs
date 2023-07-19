@@ -36,21 +36,28 @@ public class HomeController : Controller
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
-    public IActionResult Details(int? id)
+    public IActionResult Details(int productId)
     {
         ShoppingCartItem cart = new()
         {
-            Product = _unitOfWork._productRepository.Get(_ => _.Id == id).Result,
+            Product = _unitOfWork._productRepository.Get(_ => _.Id == productId).Result,
+            ProductId = productId,
         };
-        return cart.Product.Id == 0 || id == 0 ? NotFound() : View(cart);
+        return cart.Product.Id == 0 || productId == 0 ? NotFound() : View(cart);
     }
 
     [HttpPost]
     [Authorize]
-    public IActionResult Details(ShoppingCartItem shoppingCartItem)
+    public async Task<IActionResult> Details(ShoppingCartItem shoppingCartItem)
     {
         var claimsIdentity = (ClaimsIdentity)User.Identity;
         var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+        
+        shoppingCartItem.UserId = userId;
+        shoppingCartItem.Count = 1;
+
+        await _unitOfWork._shoppingCartItemRepository.Add(shoppingCartItem);
+        await _unitOfWork._shoppingCartItemRepository.Save();
 
         return RedirectToAction(nameof(Index));
     }

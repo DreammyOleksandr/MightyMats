@@ -52,11 +52,24 @@ public class HomeController : Controller
     {
         var claimsIdentity = (ClaimsIdentity)User.Identity;
         var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
-        
+
         shoppingCartItem.UserId = userId;
         shoppingCartItem.Count = 1;
 
-        await _unitOfWork._shoppingCartItemRepository.Add(shoppingCartItem);
+        ShoppingCartItem shoppingCartItemFromDb =
+            await _unitOfWork._shoppingCartItemRepository.Get(_ =>
+                _.UserId == userId && _.ProductId == shoppingCartItem.ProductId);
+
+        if (shoppingCartItemFromDb != null)
+        {
+            shoppingCartItemFromDb.Count += shoppingCartItem.Count;
+            _unitOfWork._shoppingCartItemRepository.Update(shoppingCartItemFromDb);
+        }
+        else
+        {
+            await _unitOfWork._shoppingCartItemRepository.Add(shoppingCartItem);
+        }
+
         await _unitOfWork._shoppingCartItemRepository.Save();
 
         return RedirectToAction(nameof(Index));

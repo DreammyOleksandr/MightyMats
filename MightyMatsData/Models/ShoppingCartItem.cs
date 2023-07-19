@@ -21,4 +21,7 @@ public class ShoppingCartItem
 
     [Range(1, 100, ErrorMessage = "You can't buy more than 100 mats, lad")]
     public int Count { get; set; }
+
+    [NotMapped]
+    public decimal Price { get; set; }
 }

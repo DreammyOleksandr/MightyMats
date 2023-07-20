@@ -28,20 +28,37 @@ public class ShoppingCartItemController : Controller
         {
             ShoppingCartItems =
                 await _unitOfWork._shoppingCartItemRepository.GetAll(_ => _.UserId == userId, includeProps: "Product"),
+            OrderHeader = new(),
         };
 
         foreach (var item in ShoppingCartVm.ShoppingCartItems)
         {
             item.Price = GetOrderTotal(item);
-            ShoppingCartVm.OrderTotal += (double)(item.Price * item.Count);
+            ShoppingCartVm.OrderHeader.OrderTotal += (double)(item.Price * item.Count);
         }
 
         return View(ShoppingCartVm);
     }
 
-    public IActionResult Summary()
+    public async Task<IActionResult> Summary()
     {
-        return View();
+        var claimsIdentity = (ClaimsIdentity)User.Identity;
+        var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+        ShoppingCartVm = new()
+        {
+            ShoppingCartItems =
+                await _unitOfWork._shoppingCartItemRepository.GetAll(_ => _.UserId == userId, includeProps: "Product"),
+            OrderHeader = new(),
+        };
+        
+        foreach (var item in ShoppingCartVm.ShoppingCartItems)
+        {
+            item.Price = GetOrderTotal(item);
+            ShoppingCartVm.OrderHeader.OrderTotal += (double)(item.Price * item.Count);
+        }
+        
+        return View(ShoppingCartVm);
     }
 
     private decimal GetOrderTotal(ShoppingCartItem shoppingCartItem)
@@ -80,10 +97,10 @@ public class ShoppingCartItemController : Controller
     {
         ShoppingCartItem shoppingCartItem = await _unitOfWork._shoppingCartItemRepository.Get(_ => _.Id == cartId);
         _unitOfWork._shoppingCartItemRepository.Remove(shoppingCartItem);
-        
+
         await _unitOfWork._shoppingCartItemRepository.Save();
-        
-        
+
+
         return RedirectToAction(nameof(Index));
     }
 }

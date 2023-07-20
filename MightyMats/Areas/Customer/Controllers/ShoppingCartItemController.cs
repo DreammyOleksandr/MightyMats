@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MightyMatsData;
 using MightyMatsData.Models;
 using MightyMatsData.Models.ViewModels;
 using MightyMatsData.UnitOfWork;
@@ -12,7 +13,8 @@ namespace MightyMats.Controllers;
 public class ShoppingCartItemController : Controller
 {
     private readonly IUnitOfWork _unitOfWork;
-    public ShoppingCartVM ShoppingCartVm { get; set; }
+
+    [BindProperty] public ShoppingCartVM ShoppingCartVm { get; set; }
 
     public ShoppingCartItemController(IUnitOfWork unitOfWork)
     {
@@ -51,13 +53,53 @@ public class ShoppingCartItemController : Controller
                 await _unitOfWork._shoppingCartItemRepository.GetAll(_ => _.UserId == userId, includeProps: "Product"),
             OrderHeader = new(),
         };
+
+        foreach (var item in ShoppingCartVm.ShoppingCartItems)
+        {
+            item.Price = GetOrderTotal(item);
+            ShoppingCartVm.OrderHeader.OrderTotal += (double)(item.Price * item.Count);
+        }
+
+        return View(ShoppingCartVm);
+    }
+
+    [HttpPost, ActionName("Summary")]
+    public async Task<IActionResult> SummaryPOST(ShoppingCartVM shoppingCartVm)
+    {
+        var claimsIdentity = (ClaimsIdentity)User.Identity;
+        var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+        ShoppingCartVm.ShoppingCartItems =
+            await _unitOfWork._shoppingCartItemRepository.GetAll(_ => _.UserId == userId, includeProps: "Product");
+
+        ShoppingCartVm.OrderHeader.UserId = userId;
+        ShoppingCartVm.OrderHeader.OrderDate = DateTime.Now;
         
         foreach (var item in ShoppingCartVm.ShoppingCartItems)
         {
             item.Price = GetOrderTotal(item);
             ShoppingCartVm.OrderHeader.OrderTotal += (double)(item.Price * item.Count);
         }
-        
+
+        ShoppingCartVm.OrderHeader.OrderStatus = StaticDetails.StatusPending;
+        ShoppingCartVm.OrderHeader.PaymentStatus = StaticDetails.PaymentStatusPending;
+
+        await _unitOfWork._orderHeaderRepository.Add(ShoppingCartVm.OrderHeader);
+        await _unitOfWork._orderHeaderRepository.Save();
+
+        foreach (var item in ShoppingCartVm.ShoppingCartItems)
+        {
+            OrderDetail orderDetail = new()
+            {
+                ProductId = item.ProductId,
+                OrderHeaderId = ShoppingCartVm.OrderHeader.Id,
+                Price = item.Price,
+                Count = item.Count,
+            };
+            await _unitOfWork._orderDetailRepository.Add(orderDetail);
+            await _unitOfWork._orderDetailRepository.Save();
+        }
+
         return View(ShoppingCartVm);
     }
 

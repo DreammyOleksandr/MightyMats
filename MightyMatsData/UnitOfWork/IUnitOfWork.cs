@@ -8,4 +8,5 @@ public interface IUnitOfWork
     IShoppingCartItemRepository _shoppingCartItemRepository { get; set; }
     IOrderDetailRepository _orderDetailRepository { get; set; }
     IOrderHeaderRepository _orderHeaderRepository { get; set; }
+    IIdentityUserRepository _identityUserRepository { get; set; }
 }

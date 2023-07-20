@@ -10,6 +10,7 @@ public class UnitOfWork : IUnitOfWork
     public IShoppingCartItemRepository _shoppingCartItemRepository { get; set; }
     public IOrderDetailRepository _orderDetailRepository { get; set; }
     public IOrderHeaderRepository _orderHeaderRepository { get; set; }
+    public IIdentityUserRepository _identityUserRepository { get; set; }
 
     public UnitOfWork(ApplicationDbContext db)
     {
@@ -18,5 +19,6 @@ public class UnitOfWork : IUnitOfWork
         _shoppingCartItemRepository = new ShoppingCartItemRepository(_db);
         _orderHeaderRepository = new OrderHeaderRepository(_db);
         _orderDetailRepository = new OrderDetailRepository(_db);
+        _identityUserRepository = new IdentityUserRepository(_db);
     }
 }

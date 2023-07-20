@@ -80,7 +80,10 @@ public class ShoppingCartItemController : Controller
     {
         ShoppingCartItem shoppingCartItem = await _unitOfWork._shoppingCartItemRepository.Get(_ => _.Id == cartId);
         _unitOfWork._shoppingCartItemRepository.Remove(shoppingCartItem);
+        
         await _unitOfWork._shoppingCartItemRepository.Save();
+        
+        
         return RedirectToAction(nameof(Index));
     }
 }

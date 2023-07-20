@@ -54,6 +54,8 @@ public class ShoppingCartItemController : Controller
             OrderHeader = new(),
         };
 
+        ShoppingCartVm.OrderHeader.User = await _unitOfWork._identityUserRepository.Get(_ => _.Id == userId);
+
         foreach (var item in ShoppingCartVm.ShoppingCartItems)
         {
             item.Price = GetOrderTotal(item);
@@ -71,10 +73,10 @@ public class ShoppingCartItemController : Controller
 
         ShoppingCartVm.ShoppingCartItems =
             await _unitOfWork._shoppingCartItemRepository.GetAll(_ => _.UserId == userId, includeProps: "Product");
-
+        
         ShoppingCartVm.OrderHeader.UserId = userId;
         ShoppingCartVm.OrderHeader.OrderDate = DateTime.Now;
-        
+
         foreach (var item in ShoppingCartVm.ShoppingCartItems)
         {
             item.Price = GetOrderTotal(item);
@@ -100,7 +102,12 @@ public class ShoppingCartItemController : Controller
             await _unitOfWork._orderDetailRepository.Save();
         }
 
-        return View(ShoppingCartVm);
+        return RedirectToAction(nameof(OrderConfirmation), new { id = ShoppingCartVm.OrderHeader.Id });
+    }
+
+    public IActionResult OrderConfirmation(int id)
+    {
+        return View(id);
     }
 
     private decimal GetOrderTotal(ShoppingCartItem shoppingCartItem)

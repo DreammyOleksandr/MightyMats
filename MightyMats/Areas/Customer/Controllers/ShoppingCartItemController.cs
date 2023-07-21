@@ -108,7 +108,7 @@ public class ShoppingCartItemController : Controller
 
         var options = new SessionCreateOptions
         {
-            SuccessUrl = domain + $"Customer/ShoppingCartItem/OrderConfirmation?id={shoppingCartVm.OrderHeader.Id}",
+            SuccessUrl = domain + $"Customer/ShoppingCartItem/OrderConfirmation?id={ShoppingCartVm.OrderHeader.Id}",
             CancelUrl = domain + $"Customer/ShoppingCartItem/Index",
             LineItems = new List<SessionLineItemOptions>(),
             Mode = "payment",
@@ -138,13 +138,33 @@ public class ShoppingCartItemController : Controller
         _unitOfWork._orderHeaderRepository.UpdateStripePaymentId(ShoppingCartVm.OrderHeader.Id, session.Id,
             session.PaymentIntentId);
         await _unitOfWork._orderHeaderRepository.Save();
-        
+
         Response.Headers.Add("Location", session.Url);
         return new StatusCodeResult(303);
     }
 
-    public IActionResult OrderConfirmation(int id)
+    public async Task<IActionResult> OrderConfirmation(int id)
     {
+        OrderHeader orderHeader = await _unitOfWork._orderHeaderRepository.Get(_ => _.Id == id, includeProps: "User");
+
+        var service = new SessionService();
+        Session session = await service.GetAsync(orderHeader.SessionId);
+
+        if (session.PaymentStatus.ToLower() == "paid")
+        {
+            _unitOfWork._orderHeaderRepository.UpdateStripePaymentId(orderHeader.Id, session.Id,
+                session.PaymentIntentId);
+            _unitOfWork._orderHeaderRepository.UpdateStatus(id, StaticDetails.StatusApproved,
+                StaticDetails.PaymentStatusApproved);
+            await _unitOfWork._orderHeaderRepository.Save();
+        }
+
+        IEnumerable<ShoppingCartItem> shoppingCartItems =
+            _unitOfWork._shoppingCartItemRepository.GetAll(_ => _.UserId == orderHeader.UserId).Result;
+
+        _unitOfWork._shoppingCartItemRepository.RemoveRange(shoppingCartItems);
+        await _unitOfWork._shoppingCartItemRepository.Save();
+
         return View(id);
     }
 

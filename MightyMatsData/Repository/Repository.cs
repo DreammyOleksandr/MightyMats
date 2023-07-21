@@ -34,9 +34,19 @@ public class Repository<T> : IRepository<T> where T : class
         return await query.ToListAsync();
     }
 
-    public async Task<T> Get(Expression<Func<T, bool>> filter)
+    public async Task<T> Get(Expression<Func<T, bool>> filter, string? includeProps= null)
     {
         IQueryable<T> query = _dbSet.Where(filter);
+
+        if (!string.IsNullOrEmpty(includeProps))
+        {
+            foreach (var includeProp in includeProps.Split(new char[] { ',' },
+                         StringSplitOptions.RemoveEmptyEntries))
+            {
+                query = query.Include(includeProp);
+            }
+        }
+
         return await query.FirstOrDefaultAsync();
     }
 

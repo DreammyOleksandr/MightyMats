@@ -5,6 +5,8 @@ using MightyMatsData;
 using MightyMatsData.Models;
 using MightyMatsData.Models.ViewModels;
 using MightyMatsData.UnitOfWork;
+using Stripe;
+using Stripe.Checkout;
 
 namespace MightyMats.Controllers;
 
@@ -73,7 +75,7 @@ public class ShoppingCartItemController : Controller
 
         ShoppingCartVm.ShoppingCartItems =
             await _unitOfWork._shoppingCartItemRepository.GetAll(_ => _.UserId == userId, includeProps: "Product");
-        
+
         ShoppingCartVm.OrderHeader.UserId = userId;
         ShoppingCartVm.OrderHeader.OrderDate = DateTime.Now;
 
@@ -102,7 +104,43 @@ public class ShoppingCartItemController : Controller
             await _unitOfWork._orderDetailRepository.Save();
         }
 
-        return RedirectToAction(nameof(OrderConfirmation), new { id = ShoppingCartVm.OrderHeader.Id });
+        var domain = "https://localhost:7094/";
+
+        var options = new SessionCreateOptions
+        {
+            SuccessUrl = domain + $"Customer/ShoppingCartItem/OrderConfirmation?id={shoppingCartVm.OrderHeader.Id}",
+            CancelUrl = domain + $"Customer/ShoppingCartItem/Index",
+            LineItems = new List<SessionLineItemOptions>(),
+            Mode = "payment",
+        };
+
+        foreach (var item in ShoppingCartVm.ShoppingCartItems)
+        {
+            var sessionLineItem = new SessionLineItemOptions
+            {
+                PriceData = new SessionLineItemPriceDataOptions()
+                {
+                    UnitAmount = (long)(item.Price * 100),
+                    Currency = "uah",
+                    ProductData = new SessionLineItemPriceDataProductDataOptions
+                    {
+                        Name = item.Product.Title
+                    }
+                },
+                Quantity = item.Count,
+            };
+            options.LineItems.Add(sessionLineItem);
+        }
+
+        var service = new SessionService();
+        Session session = await service.CreateAsync(options);
+
+        _unitOfWork._orderHeaderRepository.UpdateStripePaymentId(ShoppingCartVm.OrderHeader.Id, session.Id,
+            session.PaymentIntentId);
+        await _unitOfWork._orderHeaderRepository.Save();
+        
+        Response.Headers.Add("Location", session.Url);
+        return new StatusCodeResult(303);
     }
 
     public IActionResult OrderConfirmation(int id)

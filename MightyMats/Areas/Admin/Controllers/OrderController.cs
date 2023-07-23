@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using MightyMatsData.Models.ViewModels;
 using MightyMatsData.UnitOfWork;
 
 namespace MightyMats.Controllers;
@@ -16,6 +17,19 @@ public class OrderController : Controller
     public IActionResult Index()
     {
         return View();
+    }
+
+    public async Task<IActionResult> Details(int orderId)
+    {
+        OrderVM orderVm = new()
+        {
+            OrderHeader = await _unitOfWork._orderHeaderRepository
+                .Get(_ => _.Id == orderId, includeProps: "User"),
+            OrderDetails =
+                await _unitOfWork._orderDetailRepository.GetAll(_ => _.OrderHeaderId == orderId,
+                    includeProps: "Product"),
+        };
+        return View(orderVm);
     }
 
     #region API CALLS

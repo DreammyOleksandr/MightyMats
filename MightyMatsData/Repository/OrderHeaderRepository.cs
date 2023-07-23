@@ -35,6 +35,7 @@ public class OrderHeaderRepository : Repository<OrderHeader>, IOrderHeaderReposi
         {
             orderFromDb.PaymentIntentId = paymentIntentId;
             orderFromDb.OrderDate = DateTime.Now;
+            orderFromDb.PaymentDate = DateTime.Now;
         }
     }
 }

@@ -36,7 +36,7 @@ public sealed class ProductController : Controller
     public async Task<IActionResult> Create(Product product, IFormFile? file)
     {
         var webRootPath = _hostEnvironment.WebRootPath;
-        if (file != null)
+        if (!ReferenceEquals(file, null))
         {
             var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
             var productsPath = Path.Combine(webRootPath, @"images/products");
@@ -74,7 +74,7 @@ public sealed class ProductController : Controller
         var webRootPath = _hostEnvironment.WebRootPath;
         if (ModelState.IsValid)
         {
-            if (file != null)
+            if (!ReferenceEquals(file, null))
             {
                 var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
                 var productsPath = Path.Combine(webRootPath, @"images/products");
@@ -109,7 +109,7 @@ public sealed class ProductController : Controller
         var webRootPath = _hostEnvironment.WebRootPath;
         var product = await _unitOfWork._productRepository.Get(_ => _.Id == id);
 
-        if (product == null || product.Id == null || product.Id == 0)
+        if (ReferenceEquals(product, null) || ReferenceEquals(product.Id, null) || product.Id == 0)
             return NotFound();
 
         if (!string.IsNullOrEmpty(product.Image))

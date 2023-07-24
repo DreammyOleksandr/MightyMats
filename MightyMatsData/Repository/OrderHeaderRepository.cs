@@ -15,7 +15,7 @@ public sealed class OrderHeaderRepository : Repository<OrderHeader>, IOrderHeade
     public void UpdateStatus(int id, string orderStatus, string? paymentStatus = null)
     {
         var orderFromDb = _db.OrderHeaders.FirstOrDefault(_ => _.Id == id);
-        if (orderFromDb != null)
+        if (!ReferenceEquals(orderFromDb, null))
         {
             orderFromDb.OrderStatus = orderStatus;
             if (!string.IsNullOrEmpty(paymentStatus))

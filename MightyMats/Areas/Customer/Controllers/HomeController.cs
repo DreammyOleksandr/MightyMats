@@ -60,7 +60,7 @@ public sealed class HomeController : Controller
             await _unitOfWork._shoppingCartItemRepository.Get(_ =>
                 _.UserId == userId && _.ProductId == shoppingCartItem.ProductId);
 
-        if (shoppingCartItemFromDb != null)
+        if (!ReferenceEquals(shoppingCartItemFromDb, null))
         {
             shoppingCartItemFromDb.Count += shoppingCartItem.Count;
             _unitOfWork._shoppingCartItemRepository.Update(shoppingCartItemFromDb);

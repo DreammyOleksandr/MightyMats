@@ -7,7 +7,7 @@ namespace MightyMatsData.Repository;
 public class Repository<T> : IRepository<T> where T : class
 {
     private readonly ApplicationDbContext _db;
-    private DbSet<T> _dbSet;
+    private readonly DbSet<T> _dbSet;
 
     public Repository(ApplicationDbContext db)
     {
@@ -19,33 +19,25 @@ public class Repository<T> : IRepository<T> where T : class
     {
         IQueryable<T> query = _dbSet;
 
-        if (filter != null)
+        if (!ReferenceEquals(filter, null))
             query = query.Where(filter);
 
         if (!string.IsNullOrEmpty(includeProps))
-        {
-            foreach (var includeProp in includeProps.Split(new char[] { ',' },
+            foreach (var includeProp in includeProps.Split(new[] { ',' },
                          StringSplitOptions.RemoveEmptyEntries))
-            {
                 query = query.Include(includeProp);
-            }
-        }
 
         return await query.ToListAsync();
     }
 
-    public async Task<T> Get(Expression<Func<T, bool>> filter, string? includeProps= null)
+    public async Task<T> Get(Expression<Func<T, bool>> filter, string? includeProps = null)
     {
-        IQueryable<T> query = _dbSet.Where(filter);
+        var query = _dbSet.Where(filter);
 
         if (!string.IsNullOrEmpty(includeProps))
-        {
-            foreach (var includeProp in includeProps.Split(new char[] { ',' },
+            foreach (var includeProp in includeProps.Split(new[] { ',' },
                          StringSplitOptions.RemoveEmptyEntries))
-            {
                 query = query.Include(includeProp);
-            }
-        }
 
         return await query.FirstOrDefaultAsync();
     }

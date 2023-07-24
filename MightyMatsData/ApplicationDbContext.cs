@@ -4,7 +4,7 @@ using MightyMatsData.Models;
 
 namespace MightyMatsData;
 
-public class ApplicationDbContext : IdentityDbContext
+public sealed class ApplicationDbContext : IdentityDbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
@@ -12,14 +12,14 @@ public class ApplicationDbContext : IdentityDbContext
         AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
     }
 
+    public DbSet<Product> Products { get; set; }
+    public DbSet<ShoppingCartItem> ShoppingCartItems { get; set; }
+    public DbSet<OrderHeader> OrderHeaders { get; set; }
+    public DbSet<OrderDetail> OrderDetails { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseSerialColumns();
         base.OnModelCreating(modelBuilder);
     }
-
-    public DbSet<Product> Products { get; set; }
-    public DbSet<ShoppingCartItem> ShoppingCartItems { get; set; }
-    public DbSet<OrderHeader> OrderHeaders { get; set; }
-    public DbSet<OrderDetail> OrderDetails { get; set; }
 }

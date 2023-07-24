@@ -8,7 +8,7 @@ using NToastNotify;
 namespace MightyMats.Controllers;
 
 [Area("Admin")]
-public class OrderController : Controller
+public sealed class OrderController : Controller
 {
     private readonly IToastNotification _toastNotification;
     private readonly IUnitOfWork _unitOfWork;

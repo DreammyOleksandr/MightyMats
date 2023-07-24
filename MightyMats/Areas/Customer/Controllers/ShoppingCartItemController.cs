@@ -5,34 +5,33 @@ using MightyMatsData;
 using MightyMatsData.Models;
 using MightyMatsData.Models.ViewModels;
 using MightyMatsData.UnitOfWork;
-using Stripe;
 using Stripe.Checkout;
 
 namespace MightyMats.Controllers;
 
 [Area("Customer")]
 [Authorize]
-public class ShoppingCartItemController : Controller
+public sealed class ShoppingCartItemController : Controller
 {
     private readonly IUnitOfWork _unitOfWork;
-
-    [BindProperty] public ShoppingCartVM ShoppingCartVm { get; set; }
 
     public ShoppingCartItemController(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
     }
 
+    [BindProperty] public ShoppingCartVM ShoppingCartVm { get; set; }
+
     public async Task<IActionResult> Index()
     {
         var claimsIdentity = (ClaimsIdentity)User.Identity;
         var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-        ShoppingCartVm = new()
+        ShoppingCartVm = new ShoppingCartVM
         {
             ShoppingCartItems =
-                await _unitOfWork._shoppingCartItemRepository.GetAll(_ => _.UserId == userId, includeProps: "Product"),
-            OrderHeader = new(),
+                await _unitOfWork._shoppingCartItemRepository.GetAll(_ => _.UserId == userId, "Product"),
+            OrderHeader = new OrderHeader()
         };
 
         foreach (var item in ShoppingCartVm.ShoppingCartItems)
@@ -49,11 +48,11 @@ public class ShoppingCartItemController : Controller
         var claimsIdentity = (ClaimsIdentity)User.Identity;
         var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-        ShoppingCartVm = new()
+        ShoppingCartVm = new ShoppingCartVM
         {
             ShoppingCartItems =
-                await _unitOfWork._shoppingCartItemRepository.GetAll(_ => _.UserId == userId, includeProps: "Product"),
-            OrderHeader = new(),
+                await _unitOfWork._shoppingCartItemRepository.GetAll(_ => _.UserId == userId, "Product"),
+            OrderHeader = new OrderHeader()
         };
 
         ShoppingCartVm.OrderHeader.User = await _unitOfWork._identityUserRepository.Get(_ => _.Id == userId);
@@ -67,14 +66,15 @@ public class ShoppingCartItemController : Controller
         return View(ShoppingCartVm);
     }
 
-    [HttpPost, ActionName("Summary")]
+    [HttpPost]
+    [ActionName("Summary")]
     public async Task<IActionResult> SummaryPOST(ShoppingCartVM shoppingCartVm)
     {
         var claimsIdentity = (ClaimsIdentity)User.Identity;
         var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
         ShoppingCartVm.ShoppingCartItems =
-            await _unitOfWork._shoppingCartItemRepository.GetAll(_ => _.UserId == userId, includeProps: "Product");
+            await _unitOfWork._shoppingCartItemRepository.GetAll(_ => _.UserId == userId, "Product");
 
         ShoppingCartVm.OrderHeader.UserId = userId;
         ShoppingCartVm.OrderHeader.OrderDate = DateTime.Now;
@@ -98,7 +98,7 @@ public class ShoppingCartItemController : Controller
                 ProductId = item.ProductId,
                 OrderHeaderId = ShoppingCartVm.OrderHeader.Id,
                 Price = item.Price,
-                Count = item.Count,
+                Count = item.Count
             };
             await _unitOfWork._orderDetailRepository.Add(orderDetail);
             await _unitOfWork._orderDetailRepository.Save();
@@ -109,16 +109,16 @@ public class ShoppingCartItemController : Controller
         var options = new SessionCreateOptions
         {
             SuccessUrl = domain + $"Customer/ShoppingCartItem/OrderConfirmation?id={ShoppingCartVm.OrderHeader.Id}",
-            CancelUrl = domain + $"Customer/ShoppingCartItem/Index",
+            CancelUrl = domain + "Customer/ShoppingCartItem/Index",
             LineItems = new List<SessionLineItemOptions>(),
-            Mode = "payment",
+            Mode = "payment"
         };
 
         foreach (var item in ShoppingCartVm.ShoppingCartItems)
         {
             var sessionLineItem = new SessionLineItemOptions
             {
-                PriceData = new SessionLineItemPriceDataOptions()
+                PriceData = new SessionLineItemPriceDataOptions
                 {
                     UnitAmount = (long)(item.Price * 100),
                     Currency = "uah",
@@ -127,13 +127,13 @@ public class ShoppingCartItemController : Controller
                         Name = item.Product.Title
                     }
                 },
-                Quantity = item.Count,
+                Quantity = item.Count
             };
             options.LineItems.Add(sessionLineItem);
         }
 
         var service = new SessionService();
-        Session session = await service.CreateAsync(options);
+        var session = await service.CreateAsync(options);
 
         _unitOfWork._orderHeaderRepository.UpdateStripePaymentId(ShoppingCartVm.OrderHeader.Id, session.Id,
             session.PaymentIntentId);
@@ -145,10 +145,10 @@ public class ShoppingCartItemController : Controller
 
     public async Task<IActionResult> OrderConfirmation(int id)
     {
-        OrderHeader orderHeader = await _unitOfWork._orderHeaderRepository.Get(_ => _.Id == id, includeProps: "User");
+        var orderHeader = await _unitOfWork._orderHeaderRepository.Get(_ => _.Id == id, "User");
 
         var service = new SessionService();
-        Session session = await service.GetAsync(orderHeader.SessionId);
+        var session = await service.GetAsync(orderHeader.SessionId);
 
         if (session.PaymentStatus.ToLower() == "paid")
         {
@@ -159,7 +159,7 @@ public class ShoppingCartItemController : Controller
             await _unitOfWork._orderHeaderRepository.Save();
         }
 
-        IEnumerable<ShoppingCartItem> shoppingCartItems =
+        var shoppingCartItems =
             _unitOfWork._shoppingCartItemRepository.GetAll(_ => _.UserId == orderHeader.UserId).Result;
 
         _unitOfWork._shoppingCartItemRepository.RemoveRange(shoppingCartItems);
@@ -175,7 +175,7 @@ public class ShoppingCartItemController : Controller
 
     public async Task<IActionResult> Plus(int cartId)
     {
-        ShoppingCartItem shoppingCartItem = await _unitOfWork._shoppingCartItemRepository.Get(_ => _.Id == cartId);
+        var shoppingCartItem = await _unitOfWork._shoppingCartItemRepository.Get(_ => _.Id == cartId);
         shoppingCartItem.Count += 1;
         _unitOfWork._shoppingCartItemRepository.Update(shoppingCartItem);
         await _unitOfWork._shoppingCartItemRepository.Save();
@@ -185,7 +185,7 @@ public class ShoppingCartItemController : Controller
 
     public async Task<IActionResult> Minus(int cartId)
     {
-        ShoppingCartItem shoppingCartItem = await _unitOfWork._shoppingCartItemRepository.Get(_ => _.Id == cartId);
+        var shoppingCartItem = await _unitOfWork._shoppingCartItemRepository.Get(_ => _.Id == cartId);
         if (shoppingCartItem.Count <= 1)
         {
             _unitOfWork._shoppingCartItemRepository.Remove(shoppingCartItem);
@@ -202,7 +202,7 @@ public class ShoppingCartItemController : Controller
 
     public async Task<IActionResult> Remove(int cartId)
     {
-        ShoppingCartItem shoppingCartItem = await _unitOfWork._shoppingCartItemRepository.Get(_ => _.Id == cartId);
+        var shoppingCartItem = await _unitOfWork._shoppingCartItemRepository.Get(_ => _.Id == cartId);
         _unitOfWork._shoppingCartItemRepository.Remove(shoppingCartItem);
 
         await _unitOfWork._shoppingCartItemRepository.Save();

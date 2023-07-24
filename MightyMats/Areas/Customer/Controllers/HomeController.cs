@@ -8,7 +8,7 @@ using MightyMatsData.UnitOfWork;
 namespace MightyMats.Controllers;
 
 [Area("Customer")]
-public class HomeController : Controller
+public sealed class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
     private readonly IUnitOfWork _unitOfWork;
@@ -21,7 +21,7 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Index()
     {
-        IEnumerable<Product> products = await _unitOfWork._productRepository.GetAll();
+        var products = await _unitOfWork._productRepository.GetAll();
         return View(products);
     }
 
@@ -41,7 +41,7 @@ public class HomeController : Controller
         ShoppingCartItem cart = new()
         {
             Product = _unitOfWork._productRepository.Get(_ => _.Id == productId).Result,
-            ProductId = productId,
+            ProductId = productId
         };
         return cart.Product.Id == 0 || productId == 0 ? NotFound() : View(cart);
     }
@@ -56,7 +56,7 @@ public class HomeController : Controller
         shoppingCartItem.UserId = userId;
         shoppingCartItem.Count = 1;
 
-        ShoppingCartItem shoppingCartItemFromDb =
+        var shoppingCartItemFromDb =
             await _unitOfWork._shoppingCartItemRepository.Get(_ =>
                 _.UserId == userId && _.ProductId == shoppingCartItem.ProductId);
 

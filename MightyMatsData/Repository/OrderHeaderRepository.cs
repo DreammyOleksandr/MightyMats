@@ -3,7 +3,7 @@ using MightyMatsData.Repository.IRepository;
 
 namespace MightyMatsData.Repository;
 
-public class OrderHeaderRepository : Repository<OrderHeader>, IOrderHeaderRepository
+public sealed class OrderHeaderRepository : Repository<OrderHeader>, IOrderHeaderRepository
 {
     private readonly ApplicationDbContext _db;
 
@@ -26,10 +26,7 @@ public class OrderHeaderRepository : Repository<OrderHeader>, IOrderHeaderReposi
     public void UpdateStripePaymentId(int id, string sessionId, string paymentIntentId)
     {
         var orderFromDb = _db.OrderHeaders.FirstOrDefault(_ => _.Id == id);
-        if (!string.IsNullOrEmpty(sessionId))
-        {
-            orderFromDb.SessionId = sessionId;
-        }
+        if (!string.IsNullOrEmpty(sessionId)) orderFromDb.SessionId = sessionId;
 
         if (!string.IsNullOrEmpty(paymentIntentId))
         {

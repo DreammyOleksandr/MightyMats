@@ -3,7 +3,7 @@ using MightyMatsData.Repository.IRepository;
 
 namespace MightyMatsData.Repository;
 
-public class OrderDetailRepository : Repository<OrderDetail>, IOrderDetailRepository
+public sealed class OrderDetailRepository : Repository<OrderDetail>, IOrderDetailRepository
 {
     public OrderDetailRepository(ApplicationDbContext db) : base(db)
     {

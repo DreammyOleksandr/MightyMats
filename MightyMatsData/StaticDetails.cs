@@ -1,10 +1,10 @@
 namespace MightyMatsData;
 
-public class StaticDetails
+public sealed class StaticDetails
 {
     public const string AdminRole = "Admin";
     public const string CustomerRole = "Customer";
-    
+
     public const string StatusPending = "Pending";
     public const string StatusApproved = "Approved";
     public const string StatusInProcess = "Processing";

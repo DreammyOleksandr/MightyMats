@@ -3,14 +3,9 @@ using MightyMatsData.Repository.IRepository;
 
 namespace MightyMatsData.UnitOfWork;
 
-public class UnitOfWork : IUnitOfWork
+public sealed class UnitOfWork : IUnitOfWork
 {
     private readonly ApplicationDbContext _db;
-    public IProductRepository _productRepository { get; set; }
-    public IShoppingCartItemRepository _shoppingCartItemRepository { get; set; }
-    public IOrderDetailRepository _orderDetailRepository { get; set; }
-    public IOrderHeaderRepository _orderHeaderRepository { get; set; }
-    public IIdentityUserRepository _identityUserRepository { get; set; }
 
     public UnitOfWork(ApplicationDbContext db)
     {
@@ -21,4 +16,10 @@ public class UnitOfWork : IUnitOfWork
         _orderDetailRepository = new OrderDetailRepository(_db);
         _identityUserRepository = new IdentityUserRepository(_db);
     }
+
+    public IProductRepository _productRepository { get; set; }
+    public IShoppingCartItemRepository _shoppingCartItemRepository { get; set; }
+    public IOrderDetailRepository _orderDetailRepository { get; set; }
+    public IOrderHeaderRepository _orderHeaderRepository { get; set; }
+    public IIdentityUserRepository _identityUserRepository { get; set; }
 }

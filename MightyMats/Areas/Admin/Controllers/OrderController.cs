@@ -1,6 +1,8 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MightyMatsData;
+using MightyMatsData.Models;
 using MightyMatsData.Models.ViewModels;
 using MightyMatsData.UnitOfWork;
 using NToastNotify;
@@ -73,7 +75,21 @@ public sealed class OrderController : Controller
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var objOrderHeaders = await _unitOfWork._orderHeaderRepository.GetAll(includeProps: "User");
+        IEnumerable<OrderHeader> objOrderHeaders;
+
+        if (User.IsInRole(StaticDetails.AdminRole))
+            objOrderHeaders = await _unitOfWork._orderHeaderRepository.GetAll(includeProps: "User");
+
+        else
+        {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            objOrderHeaders =
+                await _unitOfWork._orderHeaderRepository.GetAll(_ => _.UserId == userId, includeProps: "User");
+        }
+
+
         return Json(new { data = objOrderHeaders });
     }
 

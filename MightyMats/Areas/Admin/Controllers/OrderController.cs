@@ -10,6 +10,7 @@ using NToastNotify;
 namespace MightyMats.Controllers;
 
 [Area("Admin")]
+[Authorize]
 public sealed class OrderController : Controller
 {
     private readonly IToastNotification _toastNotification;
@@ -68,6 +69,37 @@ public sealed class OrderController : Controller
         _toastNotification.AddInfoToastMessage("Order has been updated successfully");
 
         return RedirectToAction(nameof(Details), new { orderId = orderHeaderFromDb.Id });
+    }
+
+    [Authorize(Roles = $"{StaticDetails.AdminRole}")]
+    [HttpPost]
+    public IActionResult StartProcessing()
+    {
+        _unitOfWork._orderHeaderRepository.UpdateStatus(OrderVm.OrderHeader.Id, StaticDetails.StatusInProcess);
+        _unitOfWork._orderHeaderRepository.Save();
+
+        _toastNotification.AddInfoToastMessage($"Started processing the order with id: {OrderVm.OrderHeader.Id}");
+
+        return RedirectToAction(nameof(Details), new { orderId = OrderVm.OrderHeader.Id });
+    }
+
+    [Authorize(Roles = $"{StaticDetails.AdminRole}")]
+    [HttpPost]
+    public async Task<IActionResult> ShipOrder()
+    {
+        var orderHeader = await _unitOfWork._orderHeaderRepository.Get(_ => _.Id == OrderVm.OrderHeader.Id);
+        orderHeader.Carrier = OrderVm.OrderHeader.Carrier;
+        orderHeader.TrackingNumber = OrderVm.OrderHeader.TrackingNumber;
+        orderHeader.OrderStatus = StaticDetails.StatusShipped;
+        orderHeader.ShippingDate = DateTime.Now;
+
+        _unitOfWork._orderHeaderRepository.Update(orderHeader);
+        _unitOfWork._orderHeaderRepository.UpdateStatus(OrderVm.OrderHeader.Id, StaticDetails.StatusShipped);
+        await _unitOfWork._orderHeaderRepository.Save();
+
+        _toastNotification.AddInfoToastMessage($"Order with id: {OrderVm.OrderHeader.Id} is shipped");
+
+        return RedirectToAction(nameof(Details), new { orderId = OrderVm.OrderHeader.Id });
     }
 
     #region API CALLS

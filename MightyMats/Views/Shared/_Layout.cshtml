@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using MightyMatsData
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
@@ -24,12 +25,15 @@
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="Customer" asp-controller="Home" asp-action="Privacy">Privacy</a>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="text-dark nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Contents</a>
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item" asp-area="Admin" asp-controller="Product" asp-action="Index">Products</a>
-                        </div>
-                    </li>
+                    @if (User.IsInRole(StaticDetails.AdminRole))
+                    {
+                        <li class="nav-item dropdown">
+                            <a class="text-dark nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Contents</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" asp-area="Admin" asp-controller="Product" asp-action="Index">Products</a>
+                            </div>
+                        </li>
+                    }
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="Admin" asp-controller="Order" asp-action="Index">
                             Order Management

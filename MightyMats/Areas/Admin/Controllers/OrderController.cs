@@ -6,6 +6,7 @@ using MightyMatsData.Models;
 using MightyMatsData.Models.ViewModels;
 using MightyMatsData.UnitOfWork;
 using NToastNotify;
+using Stripe;
 
 namespace MightyMats.Controllers;
 
@@ -98,6 +99,39 @@ public sealed class OrderController : Controller
         await _unitOfWork._orderHeaderRepository.Save();
 
         _toastNotification.AddInfoToastMessage($"Order with id: {OrderVm.OrderHeader.Id} is shipped");
+
+        return RedirectToAction(nameof(Details), new { orderId = OrderVm.OrderHeader.Id });
+    }
+
+    [Authorize(Roles = $"{StaticDetails.AdminRole}")]
+    [HttpPost]
+    public async Task<IActionResult> CancelOrder()
+    {
+        var orderHeader = await _unitOfWork._orderHeaderRepository.Get(_ => _.Id == OrderVm.OrderHeader.Id);
+
+        if (orderHeader.PaymentStatus == StaticDetails.PaymentStatusApproved)
+        {
+            var options = new RefundCreateOptions
+            {
+                Reason = RefundReasons.RequestedByCustomer,
+                PaymentIntent = orderHeader.PaymentIntentId,
+            };
+
+            var service = new RefundService();
+            Refund refund = service.Create(options);
+
+            _unitOfWork._orderHeaderRepository.UpdateStatus(orderHeader.Id, StaticDetails.StatusCancelled,
+                StaticDetails.StatusRefunded);
+        }
+        else
+        {
+            _unitOfWork._orderHeaderRepository.UpdateStatus(orderHeader.Id, StaticDetails.StatusCancelled,
+                StaticDetails.StatusCancelled);
+        }
+
+        await _unitOfWork._orderHeaderRepository.Save();
+
+        _toastNotification.AddInfoToastMessage($"Order with id: {OrderVm.OrderHeader.Id} was cancelled");
 
         return RedirectToAction(nameof(Details), new { orderId = OrderVm.OrderHeader.Id });
     }

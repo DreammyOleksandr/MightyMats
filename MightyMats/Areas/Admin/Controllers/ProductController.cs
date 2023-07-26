@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MightyMatsData;
 using MightyMatsData.Models;
 using MightyMatsData.UnitOfWork;
 using NToastNotify;
@@ -6,6 +8,7 @@ using NToastNotify;
 namespace MightyMats.Controllers;
 
 [Area("Admin")]
+[Authorize(Roles = StaticDetails.AdminRole)]
 public sealed class ProductController : Controller
 {
     private readonly IWebHostEnvironment _hostEnvironment;

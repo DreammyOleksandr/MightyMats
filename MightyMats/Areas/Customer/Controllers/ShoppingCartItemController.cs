@@ -5,6 +5,7 @@ using MightyMatsData;
 using MightyMatsData.Models;
 using MightyMatsData.Models.ViewModels;
 using MightyMatsData.UnitOfWork;
+using NToastNotify;
 using Stripe.Checkout;
 
 namespace MightyMats.Controllers;
@@ -14,10 +15,12 @@ namespace MightyMats.Controllers;
 public sealed class ShoppingCartItemController : Controller
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IToastNotification _toastNotification;
 
-    public ShoppingCartItemController(IUnitOfWork unitOfWork)
+    public ShoppingCartItemController(IUnitOfWork unitOfWork, IToastNotification toastNotification)
     {
         _unitOfWork = unitOfWork;
+        _toastNotification = toastNotification;
     }
 
     [BindProperty] public ShoppingCartVM ShoppingCartVm { get; set; }
@@ -180,6 +183,8 @@ public sealed class ShoppingCartItemController : Controller
         _unitOfWork._shoppingCartItemRepository.Update(shoppingCartItem);
         await _unitOfWork._shoppingCartItemRepository.Save();
 
+        _toastNotification.AddSuccessToastMessage("Mat was successfully added to the cart!");
+
         return RedirectToAction(nameof(Index));
     }
 
@@ -189,11 +194,13 @@ public sealed class ShoppingCartItemController : Controller
         if (shoppingCartItem.Count <= 1)
         {
             _unitOfWork._shoppingCartItemRepository.Remove(shoppingCartItem);
+            _toastNotification.AddInfoToastMessage("Mat was removed from the cart.");
         }
         else
         {
             shoppingCartItem.Count -= 1;
             _unitOfWork._shoppingCartItemRepository.Update(shoppingCartItem);
+            _toastNotification.AddInfoToastMessage("Mat was removed from the cart.");
         }
 
         await _unitOfWork._shoppingCartItemRepository.Save();

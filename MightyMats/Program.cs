@@ -15,8 +15,20 @@ builder.Services.AddRazorPages().AddNToastNotifyNoty(new NotyOptions
     Timeout = 5000
 });
 builder.Services.AddControllersWithViews();
+
+var connection = String.Empty;
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.Development.json");
+    connection = builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
+}
+else
+{
+    connection = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRING");
+}
+
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(
-    builder.Configuration.GetConnectionString("DefaultConnection")));
+    builder.Configuration.GetConnectionString(connection)));
 builder.Services.AddRazorPages();
 
 builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));

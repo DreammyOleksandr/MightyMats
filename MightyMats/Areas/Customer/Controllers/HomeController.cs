@@ -110,6 +110,8 @@ public sealed class HomeController : Controller
 
         await _unitOfWork._shoppingCartItemRepository.Save();
 
+        _toastNotification.AddSuccessToastMessage("Mat was successfully added to the cart!");
+
         return RedirectToAction(nameof(Index));
     }
 }

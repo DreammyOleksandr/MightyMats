@@ -46,4 +46,10 @@
       <None Include="wwwroot\images\phpZmArHz.jpeg" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Update="appsettings.Development.json">
+        <DependentUpon>appsettings.json</DependentUpon>
+      </Content>
+    </ItemGroup>
+
 </Project>

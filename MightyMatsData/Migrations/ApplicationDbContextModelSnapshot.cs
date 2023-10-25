@@ -17,7 +17,7 @@ namespace MightyMatsData.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.5")
+                .HasAnnotation("ProductVersion", "7.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseSerialColumns(modelBuilder);
@@ -271,7 +271,7 @@ namespace MightyMatsData.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("OrderDate")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("OrderStatus")
                         .HasColumnType("text");
@@ -280,10 +280,10 @@ namespace MightyMatsData.Migrations
                         .HasColumnType("double precision");
 
                     b.Property<DateTime>("PaymentDate")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("PaymentDueDate")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("PaymentIntentId")
                         .HasColumnType("text");
@@ -303,7 +303,7 @@ namespace MightyMatsData.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("ShippingDate")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("State")
                         .IsRequired()

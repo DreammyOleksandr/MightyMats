@@ -12,7 +12,7 @@ public sealed class UnitOfWork : IUnitOfWork
         _db = db;
         _productRepository = new ProductRepository(_db);
         _shoppingCartItemRepository = new ShoppingCartItemRepository(_db);
-        _orderHeaderRepository = new OrderHeaderRepository(_db);
+        // _orderHeaderRepository = new OrderHeaderRepository(_db);
         _orderDetailRepository = new OrderDetailRepository(_db);
         _identityUserRepository = new IdentityUserRepository(_db);
     }

@@ -12,15 +12,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MightyMatsData.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230719235217_AddingOrderClassesToDb")]
-    partial class AddingOrderClassesToDb
+    [Migration("20231025104443_AddingNecessaryTables")]
+    partial class AddingNecessaryTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.5")
+                .HasAnnotation("ProductVersion", "7.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseSerialColumns(modelBuilder);
@@ -239,8 +239,8 @@ namespace MightyMatsData.Migrations
                     b.Property<int>("OrderHeaderId")
                         .HasColumnType("integer");
 
-                    b.Property<double>("Price")
-                        .HasColumnType("double precision");
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("integer");
@@ -300,6 +300,9 @@ namespace MightyMatsData.Migrations
 
                     b.Property<string>("PostalCode")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SessionId")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("ShippingDate")

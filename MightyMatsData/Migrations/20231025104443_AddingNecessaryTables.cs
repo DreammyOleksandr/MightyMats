@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MightyMatsData.Migrations
 {
     /// <inheritdoc />
-    public partial class AddingOrderClassesToDb : Migration
+    public partial class AddingNecessaryTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -28,6 +28,7 @@ namespace MightyMatsData.Migrations
                     Carrier = table.Column<string>(type: "text", nullable: true),
                     PaymentDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     PaymentDueDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    SessionId = table.Column<string>(type: "text", nullable: true),
                     PaymentIntentId = table.Column<string>(type: "text", nullable: true),
                     PhoneNumber = table.Column<string>(type: "text", nullable: false),
                     StreetAddress = table.Column<string>(type: "text", nullable: false),
@@ -48,6 +49,33 @@ namespace MightyMatsData.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ShoppingCartItems",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    ProductId = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    Count = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShoppingCartItems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ShoppingCartItems_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ShoppingCartItems_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "OrderDetails",
                 columns: table => new
                 {
@@ -56,7 +84,7 @@ namespace MightyMatsData.Migrations
                     OrderHeaderId = table.Column<int>(type: "integer", nullable: false),
                     ProductId = table.Column<int>(type: "integer", nullable: false),
                     Count = table.Column<int>(type: "integer", nullable: false),
-                    Price = table.Column<double>(type: "double precision", nullable: false)
+                    Price = table.Column<decimal>(type: "numeric", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -89,6 +117,16 @@ namespace MightyMatsData.Migrations
                 name: "IX_OrderHeaders_UserId",
                 table: "OrderHeaders",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ShoppingCartItems_ProductId",
+                table: "ShoppingCartItems",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ShoppingCartItems_UserId",
+                table: "ShoppingCartItems",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -96,6 +134,9 @@ namespace MightyMatsData.Migrations
         {
             migrationBuilder.DropTable(
                 name: "OrderDetails");
+
+            migrationBuilder.DropTable(
+                name: "ShoppingCartItems");
 
             migrationBuilder.DropTable(
                 name: "OrderHeaders");

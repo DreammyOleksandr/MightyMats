@@ -53,5 +53,5 @@ jobs:
         with:
           app-name: 'mightymats'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E0AAC534CB494BD18BC8C0EF13DA7A58 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B31B930705254146868F76ABDB728E6F }}
           package: .

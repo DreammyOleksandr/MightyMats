@@ -42,6 +42,12 @@ builder.Services.AddIdentityCore<IdentityUser>(options => options.SignIn.Require
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddTokenProvider<DataProtectorTokenProvider<IdentityUser>>(TokenOptions.DefaultProvider);
 
+builder.Services.AddAuthentication().AddFacebook(_ =>
+{
+    _.ClientId = "315749608074726";
+    _.ClientSecret = "899ff2490ea6a6e321be5c4233c0bd8a";
+});
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

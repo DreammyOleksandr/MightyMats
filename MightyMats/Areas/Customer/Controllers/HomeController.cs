@@ -43,8 +43,8 @@ public sealed class HomeController : Controller
         };
 
         var shoppingCartItemFromDb =
-            await _unitOfWork._shoppingCartItemRepository.Get(_ =>
-                _.UserId == userId && _.ProductId == cart.ProductId);
+            _unitOfWork._shoppingCartItemRepository.Get(_ =>
+                _.UserId == userId && _.ProductId == cart.ProductId).Result;
 
         if (!ReferenceEquals(shoppingCartItemFromDb, null))
         {

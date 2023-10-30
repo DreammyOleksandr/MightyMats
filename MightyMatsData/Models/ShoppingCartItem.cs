@@ -16,12 +16,10 @@ public class ShoppingCartItem
 
     public string UserId { get; set; }
 
-    [ValidateNever, ForeignKey("UserId")]
-    public IdentityUser User { get; set; }
+    [ValidateNever, ForeignKey("UserId")] public IdentityUser User { get; set; }
 
     [Range(1, 100, ErrorMessage = "You can't buy more than 100 mats, lad")]
     public int Count { get; set; }
 
-    [NotMapped]
-    public decimal Price { get; set; }
+    [NotMapped] public decimal Price { get; set; }
 }

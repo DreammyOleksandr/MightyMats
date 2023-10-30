@@ -124,7 +124,7 @@ public sealed class ShoppingCartItemController : Controller
                 PriceData = new SessionLineItemPriceDataOptions
                 {
                     UnitAmount = (long)(item.Price * 100),
-                    Currency = "uah",
+                    Currency = "UAH",
                     ProductData = new SessionLineItemPriceDataProductDataOptions
                     {
                         Name = item.Product.Title
@@ -148,7 +148,7 @@ public sealed class ShoppingCartItemController : Controller
 
     public async Task<IActionResult> OrderConfirmation(int id)
     {
-        var orderHeader = await _unitOfWork._orderHeaderRepository.Get(_ => _.Id == id, "User");
+        var orderHeader = _unitOfWork._orderHeaderRepository.Get(u => u.Id == id).GetAwaiter().GetResult();
 
         var service = new SessionService();
         var session = await service.GetAsync(orderHeader.SessionId);

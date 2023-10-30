@@ -31,8 +31,8 @@ public sealed class OrderHeaderRepository : Repository<OrderHeader>, IOrderHeade
         if (!string.IsNullOrEmpty(paymentIntentId))
         {
             orderFromDb.PaymentIntentId = paymentIntentId;
-            orderFromDb.OrderDate = DateTime.Now;
-            orderFromDb.PaymentDate = DateTime.Now;
+            orderFromDb.OrderDate = DateTime.UtcNow;
+            orderFromDb.PaymentDate = DateTime.UtcNow;
         }
     }
 }

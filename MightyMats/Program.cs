@@ -47,6 +47,12 @@ builder.Services.AddAuthentication().AddFacebook(_ =>
     _.ClientId = "315749608074726";
     _.ClientSecret = "899ff2490ea6a6e321be5c4233c0bd8a";
 });
+builder.Services.AddAuthentication().AddGoogle(_ =>
+{
+    _.ClientId = "618516578131-qgq1f1uasso0udds47k21ca71pf48rh6.apps.googleusercontent.com";
+    _.ClientSecret = "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";
+});
+
 
 var app = builder.Build();
 
